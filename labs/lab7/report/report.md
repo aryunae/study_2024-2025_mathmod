@@ -75,13 +75,13 @@ header-includes:
 Построить график распространения рекламы, математическая модель которой описывается
 следующим уравнением:
 
-1. $\dfrac{dn}{dt} = (0.88+0.00008n(t))(N-n(t))$
+1. $\dfrac{dn}{dt} = (0.93+0.00003n(t))(N-n(t))$
 
-2. $\dfrac{dn}{dt} = (0.00008+0.88n(t))(N-n(t))$
+2. $\dfrac{dn}{dt} = (0.00003+0.62n(t))(N-n(t))$
 
-3. $\dfrac{dn}{dt} = (0.7t+0.6sin(t)n(t))(N-n(t))$
+3. $\dfrac{dn}{dt} = (0.88cos(t)+0.77cos(2t)n(t))(N-n(t))$
 
-При этом объем аудитории $N = 1230$, в начальный момент о товаре знает 14 человек. Для случая 2 определить в какой момент времени скорость распространения рекламы будет
+При этом объем аудитории $N = 1120$, в начальный момент о товаре знает 19 человек. Для случая 2 определить в какой момент времени скорость распространения рекламы будет
 иметь максимальное значение.
 
 # Теоретическое введение
@@ -103,10 +103,10 @@ $$\dfrac{dn}{dt} = (\alpha_1+\alpha_2 n(t))(N-n(t))$$
 ```Julia
 using DifferentialEquations, Plots;
 f(n, p, t) = (p[1] + p[2]*n)*(p[3] - n)
-p1 = [0.88, 0.00008, 1230]
-p2 = [0.00008, 0.88, 1230]
-n_0 = 14
-tspan1 = (0.0, 14.0)
+p1 = [0.93, 0.00003, 1120]
+p2 = [0.00003, 0.62, 1120]
+n_0 = 19
+tspan1 = (0.0, 19.0)
 tspan2 = (0.0, 0.02)
 prob1 = ODEProblem(f, n_0, tspan1, p1)
 prob2 = ODEProblem(f, n_0, tspan2, p2)
@@ -137,22 +137,22 @@ plot(sol2, markersize =:15, c=:green, yaxis="N(t)")
 dev = [sol2(i, Val{1}) for i in 0:0.0001:0.02]
 maximum(dev)
 ```
-Получим значение `332697.90948582883`.
+Получим значение `194419.66813427207`.
 
 Далее найдем индекс этого элемента в векторе `dev`.
 
 ```Julia
-findall(x -> x == 332697.90948582883, dev)
+findall(x -> x == 194419.66813427207, dev)
 
 1-element Vector{Int64}:
- 43
+ 60
 ```
 
 Поскольку шаг и интервал времени, на котором мы вычисляли производные, равны шагу и интервалу времени, на котором мы решали ДУ, то индексы в векторе `dev` совпадают с индексами в векторе `sol.t` и `sol.u`. То есть мы можем найти момент времени и значение N(t), когда скорость распространения рекламы максимальна. Для наглядности отразим это на графике (рис. [-@fig:002]).
 
 ```Julia
- x = sol2.t[43]
- y = sol2.u[43]
+ x = sol2.t[60]
+ y = sol2.u[60]
  scatter!((x,y), c=:purple, leg=:bottomright)
 ```
 
@@ -165,9 +165,9 @@ findall(x -> x == 332697.90948582883, dev)
 ```Julia
 function f3(u,p,t)
     n = u
-    dn = (0.7*t + 0.6*sin(t)*n)*(1230 - n)
+    dn = (0.88*cos(t) + 0.77*cos(2t)*n)*(1120 - n)
 end
-u_0 = 14
+u_0 = 19
 tspan = (0.0, 2)
 prob = ODEProblem(f3, u_0, tspan)
 sol = DifferentialEquations.solve(prob, Tsit5(), saveat = 0.001)
@@ -185,10 +185,10 @@ plot(sol, markersize =:15, c=:green, yaxis="N(t)")
 Здесь мы задаем параметры, начальные условия, ДУ и выполняем симуляцию на том же интервале и с тем же шагом, что и в Julia.
 
 ```
-  parameter Real a_1 = 0.88;
-  parameter Real a_2 = 0.00008;
-  parameter Real N = 1230;
-  parameter Real n_0 = 14;
+  parameter Real a_1 = 0.93;
+  parameter Real a_2 = 0.00003;
+  parameter Real N = 1120;
+  parameter Real n_0 = 19;
   
   Real n(start=n_0);
 
@@ -205,10 +205,10 @@ equation
 Задаем параметры, начальные условия, ДУ и выполняем симуляцию на том же интервале и с тем же шагом, что и в Julia.
 
 ```
-  parameter Real a_1 = 0.00008;
-  parameter Real a_2 = 0.88;
-  parameter Real N = 1230;
-  parameter Real n_0 = 14;
+  parameter Real a_1 = 0.00003;
+  parameter Real a_2 = 0.62;
+  parameter Real N = 1120;
+  parameter Real n_0 = 19;
   
   Real n(start=n_0);
 
@@ -233,10 +233,10 @@ equation
 Задаем параметры, начальные условия, ДУ и выполняем симуляцию на том же интервале и с тем же шагом, что и в Julia.
 
 ```
-  parameter Real a_1 = 0.7;
-  parameter Real a_2 = 0.6;
-  parameter Real N = 1230;
-  parameter Real n_0 = 14;
+  parameter Real a_1 = 0.88;
+  parameter Real a_2 = 0.77;
+  parameter Real N = 1120;
+  parameter Real n_0 = 19;
   
   Real n(start=n_0);
 
